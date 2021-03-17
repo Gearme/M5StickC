@@ -3,44 +3,57 @@
 
 #include "M5StickC.h"
 
-M5StickC::M5StickC():isInited(0) {
-
+M5StickC::M5StickC() : isInited(0)
+{
 }
 
-void M5StickC::begin(bool LCDEnable, bool PowerEnable, bool SerialEnable){
-	
+void M5StickC::begin(bool LCDEnable, bool PowerEnable, bool SerialEnable)
+{
+
 	//! Correct init once
-	if (isInited) return;
-	else isInited = true;
+	if (isInited)
+		return;
+	else
+		isInited = true;
 
 	//! UART
-	if (SerialEnable) {
+	if (SerialEnable)
+	{
 		Serial.begin(115200);
 		Serial.flush();
 		delay(50);
 		Serial.print("M5StickC initializing...");
 	}
 
-    // Power
-	if (PowerEnable) {
+	// Power
+	if (PowerEnable)
+	{
 		Axp.begin();
 	}
 
 	// LCD INIT
-	if (LCDEnable) {
+	if (LCDEnable)
+	{
 		Lcd.begin();
 	}
 
-	if (SerialEnable) {
+	if (SerialEnable)
+	{
 		Serial.println("OK");
 	}
-
+#ifdef M5STICKC_PLUS
+	buzzer.begin();
+#endif
 	Rtc.begin();
 }
 
-void M5StickC::update() {
+void M5StickC::update()
+{
 	M5.BtnA.read();
 	M5.BtnB.read();
+#ifdef M5STICKC_PLUS
+	buzzer.update();
+#endif
 }
 
 M5StickC M5;

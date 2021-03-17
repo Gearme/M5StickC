@@ -12,7 +12,7 @@
  * @brief   Header for M5StickC.cpp module
  *
  * \par Description
- * This file is a drive for M5StickC core.
+ * This file is a driver for M5StickC core and Plus modules.
  *
  * \par Method List:
  *    
@@ -54,6 +54,7 @@
  * <pre>
  * `<Author>`         `<Time>`        `<Version>`        `<Descr>`
  * Yang Zhou         2019/04/08         0.0.6          Rebuild the new.
+ * Gerald Melles     2019/04/08         0.0.7          Made library compatible with M5StickC-Plus.
  * </pre>
  *
  */
@@ -75,16 +76,19 @@
 #include "utility/MPU6886.h"
 #include "utility/Button.h"
 #include "utility/CommUtil.h"
+#ifdef BUZZER
+#include "utility/Buzzer.h"
+#endif
 
 #include "RTC.h"
 #include "IMU.h"
 
+class M5StickC
+{
 
-class M5StickC {
-
- public:
+public:
     M5StickC();
-	void begin(bool LCDEnable=true, bool PowerEnable=true, bool SerialEnable=true);
+    void begin(bool LCDEnable = true, bool PowerEnable = true, bool SerialEnable = true);
     void update();
 
     //!LCD
@@ -92,24 +96,25 @@ class M5StickC {
 
     //!Power
     AXP192 Axp = AXP192();
-
-    #define DEBOUNCE_MS 10
+#ifdef BUZZER
+    Buzzer buzzer;
+#endif
+#define DEBOUNCE_MS 10
     Button BtnA = Button(BUTTON_A_PIN, true, DEBOUNCE_MS);
     Button BtnB = Button(BUTTON_B_PIN, true, DEBOUNCE_MS);
     //!RTC
-    RTC  Rtc;
+    RTC Rtc;
 
     IMU Imu;
     CommUtil I2C = CommUtil();
-    
+
     MPU6886 Mpu6886;
     SH200Q Sh200Q;
 
- private:
+private:
     bool isInited;
     //uint8_t _wakeupPin;
 };
-
 
 extern M5StickC M5;
 #define m5 M5
@@ -123,7 +128,7 @@ extern M5StickC M5;
 #define sh200q Sh200Q
 
 #else
-#error “This library only supports boards with ESP32 processor.”	
+#error “This library only supports boards with ESP32 processor.”
 #endif
 
 #endif
